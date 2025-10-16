@@ -15,12 +15,12 @@ section .text
 	global _start
 
 _start:
-	mov r14, 7
+	mov r15, 7
 	mov dl, 0
 	call change_node_val
-	mov r14, 9
+	mov r15, 9
 	call append_node
-	mov r14, 13
+	mov r15, 13
 	call append_node
 	call print_list
 	mov rax, 60
@@ -45,10 +45,10 @@ delete_node:
 	cmp dl, 0
 	je end 							; cannot delete head node
 	call get_node_data
-	mov r12, rcx				; save address of del node
+	mov r15, rcx				; save address of del node
 	dec dl							; node before del node
 	call get_node_data
-	mov r13, [r12+8]	
+	mov r13, [r15+8]	
 	mov [rcx+8], r13		; load del node ptr into prev ptr
 	cmp [rcx+8], 0
 	jne not_last_node
@@ -58,7 +58,7 @@ delete_node:
 
 	; free address of deleted node
 	mov rax, 11
-	mov rdi, r12
+	mov rdi, r15
 	mov rsi, 16
 	syscall
 	
@@ -66,22 +66,19 @@ delete_node:
 		ret
 
 print_list:
-	xor dh, dh
-	mov rax, [head]
-	mov rbx, [head+8]
-	mov rcx, head
-	;call debug
+	mov rax, [head]			; load value of head
+	mov rbx, [head+8]		;	load pointer of head
+	mov rcx, head				; load address of head	
 	check:
-		mov rdi, rcx
-		mov rsi, buff
-		call print_num
-		cmp rbx, 0
-		je end_of_list
-		mov rcx, rbx
-		mov rax, [rcx]
-		mov rbx, [rcx+8]
-		inc dh
-		jmp check 
+		mov rdi, rcx			; load pointer to value 
+		mov rsi, buff			; load buffer for printing
+		call print_num		; print the number
+		cmp rbx, 0				; check if pointer is 0
+		je end_of_list		; if it is, finish loop
+		mov rcx, rbx			; move onto new node from pointer
+		mov rax, [rcx]		; load value into rax
+		mov rbx, [rcx+8]	; load new pointer
+		jmp check					; continue recursing 
 
 	end_of_list:
 		ret
@@ -108,38 +105,38 @@ get_node_data:
 		ret
 	
 change_node_val:
-	; args: r14 -> value
+	; args: r15 -> value
 	;				dl -> index (byte)
 	call get_node_data
-	mov [rcx], r14
+	mov [rcx], r15
 	ret
 
 insert_after:
-	; args: r14 -> value
+	; args: r15 -> value
 	;				dl -> index (byte)
 	call get_new_addr
-	mov rax, r12						; save address of new node
+	mov rax, r15						; save address of new node
 	call get_node_data
 	mov r13, [rcx+8]
-	mov [r12+8], r13				; set new node pointer to dl pointer
-	mov [r12], r14					; set new node value
-	mov [rcx+8], r12				; set dl node pointer to new address
+	mov [r15+8], r13				; set new node pointer to dl pointer
+	mov [r15], r12					; set new node value
+	mov [rcx+8], r15				; set dl node pointer to new address
 	ret
 
 append_node:
-	; args: r14 -> value
+	; args: r15 -> value
 	
 	call get_new_addr 		; mmap 16 bytes for new node
 	; rax has new address
 	mov r13, [tail]       ; move new address into tail pointer
   mov [r13+8], rax		  ;	
-	mov [rax], r14				; move new value into new address
+	mov [rax], r15				; move new value into new address
 	mov qword [rax+8], 0	; set tail pointer to 0
 	mov [tail], rax 			; update pointer
-
-  ret
+	ret
 
 debug:
+	push rcx
 	push rax
 	push rdi
 	push rsi
@@ -153,5 +150,6 @@ debug:
 	pop rsi
 	pop rdi
 	pop rax
+	pop rcx
 	ret
 
