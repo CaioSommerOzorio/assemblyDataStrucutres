@@ -15,14 +15,6 @@ section .text
 	global _start
 
 _start:
-	mov r15, 7
-	mov dl, 0
-	call change_node_val
-	mov r15, 9
-	call append_node
-	mov r15, 13
-	call append_node
-	call print_list
 	mov rax, 60
 	xor rdi,rdi
 	syscall
@@ -114,13 +106,16 @@ change_node_val:
 insert_after:
 	; args: r15 -> value
 	;				dl -> index (byte)
+	push rdx
 	call get_new_addr
-	mov rax, r15						; save address of new node
+	xor rdx, rdx
+	pop rdx
+	mov r14, rax						; save address of new node
 	call get_node_data
-	mov r13, [rcx+8]
-	mov [r15+8], r13				; set new node pointer to dl pointer
-	mov [r15], r12					; set new node value
-	mov [rcx+8], r15				; set dl node pointer to new address
+	mov r13, [rcx+8]				; load dl node pointer 
+	mov [r14+8], r13				; set new node pointer to dl pointer
+	mov [r14], r15					; set new node value
+	mov [rcx+8], r14				; set dl node pointer to new address
 	ret
 
 append_node:
@@ -133,4 +128,30 @@ append_node:
 	mov [rax], r15				; move new value into new address
 	mov qword [rax+8], 0	; set tail pointer to 0
 	mov [tail], rax 			; update pointer
+	ret
+
+
+debug:
+	push rax
+	push rbx
+	push rcx
+	push rdx
+	push r11
+	push rsi
+	push rdi
+	
+	mov rax, 1
+	mov rdi, 1
+	lea rsi, [debug_msg]
+	mov rdx, 6
+	syscall
+
+	pop rdi
+	pop rsi
+	pop r11
+	pop rdx
+	pop rcx
+	pop rbx
+	pop rax
+
 	ret
