@@ -134,22 +134,3 @@ append_node:
 	mov qword [rax+8], 0	; set tail pointer to 0
 	mov [tail], rax 			; update pointer
 	ret
-
-debug:
-	push rcx
-	push rax
-	push rdi
-	push rsi
-	push rdx
-	mov rax, 1
-	mov rdi, 1
-	lea rsi, [debug_msg]
-	mov rdx, 6
-	syscall
-	pop rdx
-	pop rsi
-	pop rdi
-	pop rax
-	pop rcx
-	ret
-
