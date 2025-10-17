@@ -1,14 +1,33 @@
 default rel
 ; general purpose outputting and comming algorithms
 
+%macro PUSH_REGS 0
+  push rax
+  push rbx
+  push rcx
+  push rdx
+  push rsi
+  push rdi
+  push r11
+%endmacro
+
+%macro POP_REGS 0
+  pop r11
+  pop rdi
+  pop rsi
+  pop rdx
+  pop rcx
+  pop rbx
+  pop rax
+%endmacro
+
 ; string length: returns length of a string, string must have 0 at the end
 ; args: rdi -> pointer to string
-
 ; returns: r15 -> length of string
 string_length:
-  call push_registers
+  PUSH_REGS
   xor r15, r15
-  mov dl, 0
+  mov rdx, 0
   check_0:
     mov rax, [rdi+rdx]
     cmp rax, 0
@@ -16,15 +35,30 @@ string_length:
     inc dl
     jmp check_0
   end_of_string:
-  call pop_registers
+  POP_REGS
   mov r15, rdx
+  ret
+
+; print_string: prints a string
+; args: rdi -> pointer to string
+;       rsi -> pointer to buffer
+print_string:
+  PUSH_REGS
+  xor r15, r15
+  call string_length
+  mov rax, 1
+  mov rdi, 1
+  mov rsi, rdi
+  mov rdx, r15
+  syscall
+  POP_REGS
   ret
 
 ; print_num: prints a 32 bit number
 ; args: rdi -> pointer to string
 ;       rsi -> buffer of >= 12 bits
 print_num:
-call push_registers
+  PUSH_REGS
   mov eax, [rdi]
   xor rcx, rcx
   mov rbx, 10
@@ -66,27 +100,18 @@ call push_registers
   mov rdi, 1
   lea rsi, [rsi]
   syscall
-  call pop_registers
+  POP_REGS
   ret
 
-push_registers:
-  push rax
-  push rbx
-  push rcx
-  push rdx
-  push rsi
-  push rdi
-  push r11
-  
-  ret
-
-pop_registers:
-  pop r11
-  pop rdi
-  pop rsi
-  pop rdx
-  pop rcx
-  pop rbx
-  pop rax
+; args: rsi -> debug_msg
+debug:
+  PUSH_REGS
+  mov rax, 1
+  mov rdi, 1
+  mov [debug_msg+5], 0x0a
+  mov rsi, debug_msg
+  mov rdx, 6
+  syscall
+  POP_REGS
 
   ret
