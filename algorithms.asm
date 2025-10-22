@@ -40,15 +40,13 @@ string_length:
   ret
 
 ; print_string: prints a string
-; args: rdi -> pointer to string
-;       rsi -> pointer to buffer
+; args: rsi -> pointer to string
 print_string:
   PUSH_REGS
   xor r15, r15
   call string_length
   mov rax, 1
   mov rdi, 1
-  mov rsi, rdi
   mov rdx, r15
   syscall
   POP_REGS
@@ -104,14 +102,14 @@ print_num:
   ret
 
 ; args: rsi -> debug_msg
-debug:
-  PUSH_REGS
-  mov rax, 1
-  mov rdi, 1
-  mov [debug_msg+5], 0x0a
-  mov rsi, debug_msg
-  mov rdx, 6
-  syscall
-  POP_REGS
-
-  ret
+;debug:
+;  PUSH_REGS
+;  mov rax, 1
+;  mov rdi, 1
+;  mov [debug_msg+5], 0x0a
+;  mov rsi, debug_msg
+;  mov rdx, 6
+;  syscall
+;  POP_REGS
+;
+;  ret
