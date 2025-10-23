@@ -1,8 +1,8 @@
 %include "../algorithms.asm"
 
 section .data
-    key:       db "skibidi toilet", 0
-    value:     db "hello", 0
+    key:       db "key", 0
+    value:     db "value", 0
     debug_msg: db "debug", 0x0a
 
 section .bss
@@ -25,6 +25,7 @@ _start:
 
     mov rsi, r13
     call print_string
+    call print_newline
 
     mov rax, 60
     xor rdi, rdi
