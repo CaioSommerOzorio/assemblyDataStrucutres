@@ -21,6 +21,18 @@ default rel
   pop rax
 %endmacro
 
+print_newline:
+  PUSH_REGS
+  push 0x0a
+  mov rax, 1
+  mov rdi, 1
+  mov rsi, rsp
+  mov rdx, 1
+  syscall
+  pop rax
+  POP_REGS
+  ret
+
 ; string length: returns length of a string, string must have 0 at the end
 ; args: rdi -> pointer to string
 ; returns: r15 -> length of string
@@ -100,16 +112,3 @@ print_num:
   syscall
   POP_REGS
   ret
-
-; args: rsi -> debug_msg
-;debug:
-;  PUSH_REGS
-;  mov rax, 1
-;  mov rdi, 1
-;  mov [debug_msg+5], 0x0a
-;  mov rsi, debug_msg
-;  mov rdx, 6
-;  syscall
-;  POP_REGS
-;
-;  ret
