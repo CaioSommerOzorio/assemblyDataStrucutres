@@ -1,5 +1,6 @@
 # Data Structures in Assembly
-Assembly NASM representations of data structures and algorithms to naviage them, taking an OOP inspired approach.\n
+Assembly NASM representations of data structures and algorithms to naviage them, taking an OOP inspired approach.
+
 For all methods and usage read comments in code.
 
 ## Linked list
