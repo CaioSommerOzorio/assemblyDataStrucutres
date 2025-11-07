@@ -17,7 +17,7 @@ _start:
   mov eax, 8      ; number of buckets
   mov edx, 8      ; element size (bytes)
   mov [dict_info], edx
-  mov [dict_info+4], rdx
+  mov [dict_info+4], eax
   call init_map
 
   mov r14, key
@@ -27,7 +27,7 @@ _start:
   mov r14, key
   call get_value
 
-  mov rsi, r13
+  mov rsi, r12
   call print_string
   call print_newline
 
@@ -39,12 +39,12 @@ store_value:
   ; args: dict_info
   ;       r14 -> pointer to key
   ;       r15 -> pointer to value
-  call hash_func  ; returns bucket address in r13
+  call hash_func  ; returns bucket address in r12
   mov rdi, r15
   mov rsi, r15            ; source
   call string_length 
   mov rcx, r15            ; length
-  mov rdi, [dict_info+8]  ; dest (bucket)
+  mov rdi, r12            ; dest (bucket)
   cld
   rep movsb
   ret
@@ -53,14 +53,6 @@ get_value:
   call hash_func
   ret
 
-; ------------------------------------------------------------------
-; hash_func:
-;  r14 -> key pointer
-;  r13 -> base map address (must be set by init_map)
-;  r10 -> element size (bytes)
-;  r11 -> number of buckets
-; returns:
-;  r12 -> address of chosen bucket (base + index*element_size)
 hash_func:
   ; args -> dict_info
   ;         r14 -> pointer to key
@@ -92,8 +84,8 @@ init_map:
   ; args: dict_info -> element size and dict size
   ; returns: dict_info -> address
 
-  mov r15, [dict_info]
-  mov rax, [dict_info+4]
+  movzx r15, dword [dict_info]
+  movzx rax, dword [dict_info+4]
   
   mul r15
   mov rsi, rax         
@@ -105,8 +97,6 @@ init_map:
   xor r9, r9
   mov r10, 0x22        
   syscall
-
-  mov rbx, rax
 
   mov [dict_info+8], rax   ; base address
   ret
