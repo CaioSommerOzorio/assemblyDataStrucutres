@@ -1,42 +1,8 @@
 %include "../algorithms.asm"
 
-section .data
-  key:   db "key", 0
-  value: db "value", 0
-
-section .bss
+; For dict_info: 
 ; First 8 bytes: element size and number of elements
 ; Second 8 bytes: Address of dictionary
-  dict_info: resq 2
-  buff: resb 12
-
-section .text
-  global _start
-
-_start:
-  mov r15, dict_info
-  mov eax, 8      ; number of buckets
-  mov edx, 8      ; element size (bytes)
-  mov [r15], edx
-  mov [r15+4], eax
-  call init_map
-
-  mov rsi, key
-  mov r15, dict_info
-  mov rcx, 6
-  mov r13, value
-  call store_value
-
-  mov rsi, key
-  call hash_func
-
-  mov rdi, r12
-  call print_string
-  call print_newline
-
-  mov rax, 60
-  xor rdi, rdi
-  syscall
 
 store_value:
   ; args: r15 -> pointer to dict_info
@@ -97,4 +63,3 @@ init_map:
 
   mov [r15+8], rax   ; base address
   ret
-

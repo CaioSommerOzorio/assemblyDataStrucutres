@@ -9,9 +9,13 @@ default rel
   push rsi
   push rdi
   push r11
+  push r12
+  push r15
 %endmacro
 
 %macro POP_REGS 0
+  pop r15
+  pop r12
   pop r11
   pop rdi
   pop rsi
@@ -35,10 +39,9 @@ print_newline:
 
 ; string length: returns length of a string, string must have 0 at the end
 ; args: rdi -> pointer to string
-; returns: r15 -> length of string
+; returns: rsi -> length of string
 string_length:
   PUSH_REGS
-  xor r15, r15
   mov rdx, 0
   check_0:
     mov rax, [rdi+rdx]
@@ -48,18 +51,18 @@ string_length:
     jmp check_0
   end_of_string:
   POP_REGS
-  mov r15, rdx
+  mov rsi, rdx
   ret
 
 ; print_string: prints a string
-; args: rsi -> pointer to string
+; args: rdi -> pointer to string
 print_string:
   PUSH_REGS
-  xor r15, r15
   call string_length
   mov rax, 1
+  mov rdx, rsi
+  mov rsi, rdi
   mov rdi, 1
-  mov rdx, r15
   syscall
   POP_REGS
   ret
